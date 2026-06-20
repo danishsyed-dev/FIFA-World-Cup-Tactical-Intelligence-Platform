@@ -1,0 +1,25 @@
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Virtual Environment
+predict_env/
+venv/
+.venv/
+env/
+ENV/
+
+# Local Cached Data (large JSON files that can be regenerated or downloaded)
+data/
+
+# IDE and System Files
+.idea/
+.vscode/
+.DS_Store
+Thumbs.db
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.swp

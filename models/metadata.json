@@ -1,0 +1,43 @@
+{
+  "accuracy": 0.4273059809323178,
+  "n_classes": 5,
+  "classes": [
+    "3-at-back",
+    "4-2-3-1",
+    "4-3-3",
+    "4-4-2",
+    "4-5-1"
+  ],
+  "n_samples": 5443,
+  "feature_cols": [
+    "sorted_x_0",
+    "sorted_x_1",
+    "sorted_x_2",
+    "sorted_x_3",
+    "sorted_x_4",
+    "sorted_x_5",
+    "sorted_x_6",
+    "sorted_x_7",
+    "sorted_x_8",
+    "sorted_x_9",
+    "sorted_y_0",
+    "sorted_y_1",
+    "sorted_y_2",
+    "sorted_y_3",
+    "sorted_y_4",
+    "sorted_y_5",
+    "sorted_y_6",
+    "sorted_y_7",
+    "sorted_y_8",
+    "sorted_y_9",
+    "team_centroid_x",
+    "team_centroid_y",
+    "team_length",
+    "team_width",
+    "std_x",
+    "std_y",
+    "kmeans_def",
+    "kmeans_mid",
+    "kmeans_att"
+  ]
+}
