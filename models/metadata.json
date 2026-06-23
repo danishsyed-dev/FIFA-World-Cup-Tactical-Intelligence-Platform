@@ -1,5 +1,5 @@
 {
-  "accuracy": 0.4273059809323178,
+  "accuracy": 0.319647224392466,
   "n_classes": 5,
   "classes": [
     "3-at-back",
@@ -8,7 +8,7 @@
     "4-4-2",
     "4-5-1"
   ],
-  "n_samples": 5443,
+  "n_samples": 4435,
   "feature_cols": [
     "sorted_x_0",
     "sorted_x_1",

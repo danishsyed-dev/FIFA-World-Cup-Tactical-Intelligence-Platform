@@ -16,7 +16,6 @@ BASE_URL = "https://raw.githubusercontent.com/statsbomb/open-data/master/data"
 COMPETITION_ID = 43  # FIFA World Cup
 
 WORLD_CUP_SEASONS = {
-    2026: 120,
     2022: 106,
     2018: 3,
 }

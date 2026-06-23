@@ -38,7 +38,6 @@ from src.features import (
 # ── Page configuration ──────────────────────────────────────────────
 st.set_page_config(
     page_title="Tactical Formation Classifier",
-    page_icon="⚽",
     layout="wide",
     initial_sidebar_state="expanded",
 )
@@ -46,24 +45,36 @@ st.set_page_config(
 # ── Custom CSS ──────────────────────────────────────────────────────
 st.markdown("""
 <style>
-@import url('https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,500;0,9..40,700;1,9..40,400&family=Space+Grotesk:wght@400;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Geist:wght@300;400;500;600;700&family=Geist+Mono:wght@300;400;500;600;700&display=swap');
 
 :root {
-    --bg-primary: #0a0f1a;
-    --bg-card: #111827;
-    --bg-elevated: #1a2332;
-    --accent-green: #22c55e;
-    --accent-amber: #f59e0b;
+    --bg-primary: #09090b;
+    --bg-card: #18181b;
+    --bg-elevated: #27272a;
+    --accent-green: #10b981;
+    --accent-emerald-muted: rgba(16, 185, 129, 0.1);
     --accent-rose: #f43f5e;
-    --accent-sky: #38bdf8;
-    --text-primary: #e2e8f0;
-    --text-muted: #94a3b8;
-    --border-subtle: #1e293b;
+    --text-primary: #f4f4f5;
+    --text-muted: #a1a1aa;
+    --border-subtle: #27272a;
+}
+
+/* Entrance animation */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
 }
 
 .stApp {
     background: var(--bg-primary) !important;
-    font-family: 'DM Sans', sans-serif;
+    font-family: 'Geist', sans-serif;
+    animation: fadeIn 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
 }
 
 [data-testid="stSidebar"] {
@@ -80,10 +91,10 @@ st.markdown("""
 }
 
 .hero-title {
-    font-family: 'Space Grotesk', sans-serif;
+    font-family: 'Geist', sans-serif;
     font-weight: 700;
-    font-size: 2.4rem;
-    letter-spacing: -0.03em;
+    font-size: 2.5rem;
+    letter-spacing: -0.04em;
     color: var(--text-primary);
     margin-bottom: 0;
     line-height: 1.1;
@@ -92,118 +103,184 @@ st.markdown("""
 .hero-sub {
     font-size: 1rem;
     color: var(--text-muted);
-    margin-top: 4px;
+    margin-top: 6px;
     margin-bottom: 2rem;
 }
 
 .metric-card {
     background: var(--bg-card);
     border: 1px solid var(--border-subtle);
-    border-radius: 12px;
-    padding: 1.2rem 1.4rem;
-    text-align: center;
+    border-radius: 16px;
+    padding: 1.5rem;
+    text-align: left;
+    transition: transform 0.2s cubic-bezier(0.25, 1, 0.5, 1), border-color 0.2s ease, box-shadow 0.2s ease;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+}
+
+.metric-card:hover {
+    transform: translateY(-2px);
+    border-color: var(--accent-green);
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.2), 0 4px 6px -2px rgba(0, 0, 0, 0.1);
 }
 
 .metric-card .label {
     font-size: 0.75rem;
+    font-weight: 500;
     text-transform: uppercase;
-    letter-spacing: 0.08em;
+    letter-spacing: 0.05em;
     color: var(--text-muted);
-    margin-bottom: 4px;
+    margin-bottom: 8px;
 }
 
 .metric-card .value {
-    font-family: 'Space Grotesk', sans-serif;
-    font-size: 1.8rem;
+    font-family: 'Geist Mono', monospace;
+    font-size: 2rem;
     font-weight: 700;
     color: var(--text-primary);
 }
 
 .formation-badge {
     display: inline-block;
-    padding: 6px 16px;
-    border-radius: 8px;
-    font-family: 'Space Grotesk', sans-serif;
-    font-weight: 700;
-    font-size: 1.3rem;
-    letter-spacing: 0.04em;
+    padding: 4px 12px;
+    border-radius: 6px;
+    font-family: 'Geist Mono', monospace;
+    font-weight: 600;
+    font-size: 1.15rem;
+    letter-spacing: -0.02em;
 }
 
 .badge-announced {
-    background: rgba(56, 189, 248, 0.12);
-    color: var(--accent-sky);
-    border: 1px solid rgba(56, 189, 248, 0.25);
+    background: rgba(161, 161, 170, 0.1);
+    color: var(--text-muted);
+    border: 1px solid rgba(161, 161, 170, 0.2);
 }
 
 .badge-detected {
-    background: rgba(34, 197, 94, 0.12);
+    background: rgba(16, 185, 129, 0.1);
     color: var(--accent-green);
-    border: 1px solid rgba(34, 197, 94, 0.25);
+    border: 1px solid rgba(16, 185, 129, 0.25);
 }
 
 .badge-mismatch {
-    background: rgba(244, 63, 94, 0.12);
+    background: rgba(244, 63, 94, 0.1);
     color: var(--accent-rose);
     border: 1px solid rgba(244, 63, 94, 0.25);
 }
 
 .section-header {
-    font-family: 'Space Grotesk', sans-serif;
+    font-family: 'Geist', sans-serif;
     font-weight: 600;
-    font-size: 1.15rem;
+    font-size: 1.3rem;
+    letter-spacing: -0.02em;
     color: var(--text-primary);
-    border-bottom: 2px solid var(--accent-green);
-    padding-bottom: 6px;
-    margin-top: 2rem;
-    margin-bottom: 1rem;
-    display: inline-block;
+    border-bottom: 1px solid var(--border-subtle);
+    padding-bottom: 8px;
+    margin-top: 3rem;
+    margin-bottom: 1.5rem;
+    width: 100%;
 }
 
 .insight-box {
-    background: var(--bg-elevated);
-    border-left: 3px solid var(--accent-amber);
-    border-radius: 0 8px 8px 0;
-    padding: 0.8rem 1.2rem;
-    margin: 0.5rem 0;
+    background: var(--bg-card);
+    border: 1px solid var(--border-subtle);
+    border-left: 4px solid var(--accent-green);
+    border-radius: 8px;
+    padding: 1.2rem;
+    margin: 0.8rem 0;
     color: var(--text-primary);
-    font-size: 0.9rem;
-    line-height: 1.5;
+    font-size: 0.95rem;
+    line-height: 1.6;
+    transition: transform 0.2s ease;
+}
+
+.insight-box:hover {
+    transform: translateX(4px);
 }
 
 .player-tag {
     display: inline-block;
-    background: var(--bg-elevated);
+    background: var(--bg-card);
     border: 1px solid var(--border-subtle);
-    border-radius: 6px;
-    padding: 3px 10px;
-    margin: 2px 3px;
-    font-size: 0.8rem;
+    border-radius: 8px;
+    padding: 6px 12px;
+    margin: 4px;
+    font-size: 0.85rem;
     color: var(--text-primary);
+    font-family: 'Geist', sans-serif;
+    transition: all 0.2s ease;
+}
+
+.player-tag:hover {
+    border-color: var(--accent-green);
+    transform: translateY(-1px);
 }
 
 div[data-testid="stMetric"] {
-    background: var(--bg-card);
-    border: 1px solid var(--border-subtle);
-    border-radius: 12px;
-    padding: 1rem;
+    background: var(--bg-card) !important;
+    border: 1px solid var(--border-subtle) !important;
+    border-radius: 16px !important;
+    padding: 1.2rem !important;
 }
 
 div[data-testid="stMetric"] label {
     color: var(--text-muted) !important;
+    font-size: 0.75rem !important;
+    text-transform: uppercase !important;
+    letter-spacing: 0.05em !important;
 }
 
 div[data-testid="stMetric"] [data-testid="stMetricValue"] {
     color: var(--text-primary) !important;
-    font-family: 'Space Grotesk', sans-serif !important;
+    font-family: 'Geist Mono', monospace !important;
+    font-size: 2rem !important;
+    font-weight: 700 !important;
+}
+
+/* Custom Styled Form Elements to match aesthetic */
+.stSelectbox div[data-baseweb="select"] {
+    background-color: var(--bg-card) !important;
+    border: 1px solid var(--border-subtle) !important;
+    border-radius: 8px !important;
+}
+.stSelectbox div[role="button"] {
+    color: var(--text-primary) !important;
+}
+[data-testid="stWidgetLabel"] p {
+    color: var(--text-muted) !important;
+    font-size: 0.85rem !important;
+    font-weight: 500 !important;
+}
+.stSlider [data-testid="stThumbValue"] {
+    font-family: 'Geist Mono', monospace !important;
+    color: var(--accent-green) !important;
+}
+.stSlider [role="slider"] {
+    background-color: var(--accent-green) !important;
+}
+.stSlider [data-track="true"] {
+    background-color: var(--accent-green) !important;
+}
+.stRadio div[role="radiogroup"] {
+    gap: 12px;
+}
+.stRadio div[role="radiogroup"] label {
+    background: var(--bg-card) !important;
+    border: 1px solid var(--border-subtle) !important;
+    border-radius: 8px !important;
+    padding: 6px 12px !important;
+    transition: all 0.2s ease !important;
+}
+.stRadio div[role="radiogroup"] label:hover {
+    border-color: var(--accent-green) !important;
 }
 </style>
 """, unsafe_allow_html=True)
 
 # ── Colour palette for clusters ─────────────────────────────────────
 CLUSTER_COLORS = {
-    0: "#38bdf8",  # sky — defense
-    1: "#f59e0b",  # amber — midfield
-    2: "#22c55e",  # green — attack
+    0: "#94a3b8",  # slate — defense
+    1: "#0d9488",  # teal — midfield
+    2: "#34d399",  # emerald — attack
 }
 CLUSTER_NAMES = {0: "Defense", 1: "Midfield", 2: "Attack"}
 
@@ -361,13 +438,13 @@ def draw_formation_pitch(
 ):
     """Draw a premium football pitch with player positions colour-coded."""
     fig, ax = plt.subplots(figsize=(10, 6.8))
-    fig.patch.set_facecolor("#0a0f1a")
-    ax.set_facecolor("#0a0f1a")
+    fig.patch.set_facecolor("#09090b")
+    ax.set_facecolor("#09090b")
 
     pitch = Pitch(
         pitch_type="statsbomb",
-        pitch_color="#0f1b2d",
-        line_color="#1e3a5f",
+        pitch_color="#18181b",
+        line_color="#27272a",
         linewidth=1.2,
         goal_type="box",
     )
@@ -386,7 +463,7 @@ def draw_formation_pitch(
         # Main dot
         pitch.scatter(
             x, y, ax=ax, s=180, color=color, alpha=0.9,
-            edgecolors="#0a0f1a", linewidths=1.5, zorder=5,
+            edgecolors="#09090b", linewidths=1.5, zorder=5,
         )
         # Label
         short_name = get_short_name(player)
@@ -394,12 +471,12 @@ def draw_formation_pitch(
             short_name = short_name[:11] + "."
         ax.text(
             x, y - 3.5, short_name,
-            fontsize=7, fontweight=600, color="#e2e8f0",
+            fontsize=7, fontweight=600, color="#f4f4f5",
             ha="center", va="top", zorder=6,
             fontfamily="sans-serif",
             bbox=dict(
                 boxstyle="round,pad=0.15",
-                facecolor="#0a0f1a",
+                facecolor="#09090b",
                 edgecolor="none",
                 alpha=0.7,
             ),
@@ -415,9 +492,9 @@ def draw_formation_pitch(
         loc="upper right",
         fontsize=8,
         frameon=True,
-        facecolor="#111827",
-        edgecolor="#1e293b",
-        labelcolor="#e2e8f0",
+        facecolor="#18181b",
+        edgecolor="#27272a",
+        labelcolor="#f4f4f5",
         borderpad=0.8,
     )
 
@@ -425,7 +502,7 @@ def draw_formation_pitch(
     title = f"{team_name}{title_suffix}"
     ax.set_title(
         title,
-        fontsize=13, fontweight=700, color="#e2e8f0",
+        fontsize=13, fontweight=700, color="#f4f4f5",
         fontfamily="sans-serif", pad=12,
     )
 
@@ -449,13 +526,13 @@ def draw_formation_timeline(
         2, 1, figsize=(12, 6), height_ratios=[3, 1],
         sharex=True, gridspec_kw={"hspace": 0.08},
     )
-    fig.patch.set_facecolor("#0a0f1a")
+    fig.patch.set_facecolor("#09090b")
 
     for ax in (ax_top, ax_bot):
-        ax.set_facecolor("#0f1b2d")
-        ax.tick_params(colors="#94a3b8", labelsize=8)
+        ax.set_facecolor("#18181b")
+        ax.tick_params(colors="#a1a1aa", labelsize=8)
         for spine in ax.spines.values():
-            spine.set_color("#1e293b")
+            spine.set_color("#27272a")
 
     minutes = [w["window_start"] + 5 for w in windows]
     detected = [w["detected_formation"] for w in windows]
@@ -477,7 +554,7 @@ def draw_formation_timeline(
         avg_probs = {k: np.mean(v) for k, v in prob_data.items()}
         top_classes = sorted(avg_probs, key=avg_probs.get, reverse=True)[:5]
 
-        palette = ["#38bdf8", "#22c55e", "#f59e0b", "#f43f5e", "#a78bfa"]
+        palette = ["#34d399", "#0d9488", "#94a3b8", "#f43f5e", "#a78bfa"]
         for i, cls in enumerate(top_classes):
             vals = prob_data[cls]
             mins = minutes[:len(vals)]
@@ -490,27 +567,27 @@ def draw_formation_timeline(
             )
             ax_top.fill_between(mins, vals, alpha=0.08, color=palette[i % len(palette)])
 
-        ax_top.set_ylabel("Probability", fontsize=9, color="#94a3b8")
+        ax_top.set_ylabel("Probability", fontsize=9, color="#a1a1aa")
         ax_top.set_ylim(-0.05, 1.05)
         ax_top.legend(
             fontsize=7.5, frameon=True,
-            facecolor="#111827", edgecolor="#1e293b",
-            labelcolor="#e2e8f0", loc="upper right", ncol=3,
+            facecolor="#18181b", edgecolor="#27272a",
+            labelcolor="#f4f4f5", loc="upper right", ncol=3,
         )
         ax_top.set_title(
             f"{team_name} — Formation Probability Over Time",
-            fontsize=12, fontweight=700, color="#e2e8f0",
+            fontsize=12, fontweight=700, color="#f4f4f5",
             fontfamily="sans-serif", pad=10,
         )
     else:
         ax_top.text(
             0.5, 0.5, "Train the model first to see\nformation probabilities",
             transform=ax_top.transAxes, ha="center", va="center",
-            fontsize=11, color="#64748b", fontstyle="italic",
+            fontsize=11, color="#71717a", fontstyle="italic",
         )
         ax_top.set_title(
             f"{team_name} — Formation Timeline",
-            fontsize=12, fontweight=700, color="#e2e8f0",
+            fontsize=12, fontweight=700, color="#f4f4f5",
             fontfamily="sans-serif", pad=10,
         )
 
@@ -522,7 +599,7 @@ def draw_formation_timeline(
     colors_timeline = []
     for d, a in zip(detected, announced):
         if d == a:
-            colors_timeline.append("#22c55e")
+            colors_timeline.append("#34d399")
         else:
             colors_timeline.append("#f43f5e")
 
@@ -532,11 +609,11 @@ def draw_formation_timeline(
     for m, d in zip(minutes, detected):
         ax_bot.text(
             m, 0.5, d, ha="center", va="center",
-            fontsize=6, color="#e2e8f0", fontweight=600, rotation=90,
+            fontsize=6, color="#f4f4f5", fontweight=600, rotation=90,
         )
 
-    ax_bot.set_ylabel("K-Means\nFormation", fontsize=8, color="#94a3b8")
-    ax_bot.set_xlabel("Match Minute", fontsize=9, color="#94a3b8")
+    ax_bot.set_ylabel("K-Means\nShape", fontsize=8, color="#a1a1aa")
+    ax_bot.set_xlabel("Match Minute", fontsize=9, color="#a1a1aa")
     ax_bot.set_yticks([])
 
     # Add match vs announce legend
@@ -607,7 +684,7 @@ def generate_insights(windows, timeline_entries, team):
 def main():
     # ── Sidebar ─────────────────────────────────────────────────────
     with st.sidebar:
-        st.markdown("## ⚽ Match Selector")
+        st.markdown("## Match Selector")
 
         year = st.selectbox(
             "World Cup",
@@ -756,7 +833,7 @@ def main():
         return
 
     # Render Time Window slider at the top
-    st.markdown("### ⏱️ Select Time Window")
+    st.markdown("### Select Time Window")
     window_labels = [f"{w['window_start']}′–{w['window_end']}′" for w in windows]
     # Default to the middle of the first half (or midpoint of match)
     first_half_windows = [w for w in windows if w["window_end"] <= 50]
@@ -904,7 +981,7 @@ def main():
         st.info("No notable tactical shifts detected.")
 
     # ── All-windows data table ──────────────────────────────────────
-    with st.expander("📊 Raw Window Data", expanded=False):
+    with st.expander("Raw Window Data", expanded=False):
         table_data = []
         for w in windows:
             row = {

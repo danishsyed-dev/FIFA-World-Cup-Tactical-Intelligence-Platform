@@ -2,18 +2,18 @@
 
 An interactive, premium machine learning system and Streamlit dashboard that analyzes player tracking coordinates from **StatsBomb Open Data** to detect actual team shapes using unsupervised **1-D K-Means clustering**, and tracks mid-game tactical shifts in real-time using a supervised **Random Forest classifier**.
 
-The dashboard includes full data for the **2018, 2022, and 2026 FIFA World Cups** (matching real groups, rosters, schedules, and scores).
+The dashboard includes full data for the **2018 and 2022 FIFA World Cups**.
 
 ---
 
 ## 🌟 Key Features
 
-*   **StatsBomb Data Pipeline & Cache Layer:** Dynamically fetches and locally caches matches and event data for the 2018, 2022, and 2026 World Cups to ensure instant subsequent loads.
+*   **StatsBomb Data Pipeline & Cache Layer:** Dynamically fetches and locally caches matches and event data for the 2018 and 2022 World Cups to ensure instant subsequent loads.
 *   **Substitution-Aware Player Tracking:** Chronologically processes substitution events to dynamically resolve the active outfield lineup on the pitch at any minute of the match.
 *   **Unsupervised Actual Shape Detection:** Applies 1-D K-Means clustering on active players' average depth ($X$-coordinates) to group them into *Defense*, *Midfield*, and *Attack* to resolve their actual on-pitch shape.
-*   **Supervised Tactical Shift Classifier:** A Random Forest model trained on 160 total matches (**5,441 rolling windows**) across 5 broad structural families (`3-at-back`, `4-2-3-1`, `4-3-3`, `4-4-2`, `4-5-1`), achieving **42.7% cross-validation accuracy** (a ~2.1x improvement over random guessing).
+*   **Supervised Tactical Shift Classifier:** A Random Forest model trained on 128 total matches (**4,433 rolling windows**) across 5 broad structural families (`3-at-back`, `4-2-3-1`, `4-3-3`, `4-4-2`, `4-5-1`), achieving **32.0% cross-validation accuracy** (a ~1.6x improvement over random guessing).
 *   **Premium Interactive Dashboard:** A stunning, modern dark-themed interface built with custom styling featuring:
-    *   **Hierarchical Match Selector:** World Cup Year $\rightarrow$ Tournament Stage $\rightarrow$ Group Stage (A-L) / Knockout Round $\rightarrow$ Match $\rightarrow$ Team.
+    *   **Hierarchical Match Selector:** World Cup Year $\rightarrow$ Tournament Stage $\rightarrow$ Group Stage / Knockout Round $\rightarrow$ Match $\rightarrow$ Team.
     *   **Dynamic Time-Window Slider:** Instantly updates metrics, rosters, and the pitch layout.
     *   **Tactical Board:** A beautiful soccer pitch rendering (using `mplsoccer`) showing average player positions color-coded by cluster.
     *   **Rolling Probability Timeline:** Plots the classifier's predicted probability of formations over time and highlights mismatch periods.
@@ -34,8 +34,7 @@ The dashboard includes full data for the **2018, 2022, and 2026 FIFA World Cups*
 │   ├── __init__.py
 │   ├── data_loader.py            # StatsBomb data loader and caching layer
 │   ├── features.py               # Feature engineering, K-Means shape detection, tracking
-│   ├── train.py                  # ML model training and validation pipeline
-│   └── generate_2026_data.py     # Real-world 2026 WC fixtures and rosters generator
+│   └── train.py                  # ML model training and validation pipeline
 ├── app.py                        # Streamlit dashboard application
 ├── requirements.txt              # Project dependencies
 └── README.md                     # Project documentation
@@ -69,13 +68,9 @@ The dashboard includes full data for the **2018, 2022, and 2026 FIFA World Cups*
 
 ## 🚀 How to Run
 
-### 1. Generate 2026 Data & Retrain Model (Optional)
-If you want to re-simulate the World Cup 2026 data and retrain the classifier:
+### 1. Retrain Model (Optional)
+If you want to compile the dataset and retrain the classifier on the 128 matches:
 ```bash
-# Generate the 2026 matches and event files
-python src/generate_2026_data.py
-
-# Retrain the model on the full 160-match dataset
 python -m src.train
 ```
 
