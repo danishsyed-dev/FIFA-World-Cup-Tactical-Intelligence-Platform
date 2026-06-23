@@ -278,9 +278,9 @@ div[data-testid="stMetric"] [data-testid="stMetricValue"] {
 
 # ── Colour palette for clusters ─────────────────────────────────────
 CLUSTER_COLORS = {
-    0: "#94a3b8",  # slate — defense
-    1: "#0d9488",  # teal — midfield
-    2: "#34d399",  # emerald — attack
+    0: "#38bdf8",  # sky — defense
+    1: "#f59e0b",  # amber — midfield
+    2: "#22c55e",  # green — attack
 }
 CLUSTER_NAMES = {0: "Defense", 1: "Midfield", 2: "Attack"}
 
@@ -618,13 +618,13 @@ def draw_formation_timeline(
 
     # Add match vs announce legend
     legend_items = [
-        mpatches.Patch(facecolor="#22c55e", alpha=0.7, label="Matches Announced"),
+        mpatches.Patch(facecolor="#34d399", alpha=0.7, label="Matches Announced"),
         mpatches.Patch(facecolor="#f43f5e", alpha=0.7, label="Differs from Announced"),
     ]
     ax_bot.legend(
         handles=legend_items, fontsize=7, frameon=True,
-        facecolor="#111827", edgecolor="#1e293b",
-        labelcolor="#e2e8f0", loc="lower right",
+        facecolor="#18181b", edgecolor="#27272a",
+        labelcolor="#f4f4f5", loc="lower right",
     )
 
     plt.tight_layout()
