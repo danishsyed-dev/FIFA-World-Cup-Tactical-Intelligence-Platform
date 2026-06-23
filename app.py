@@ -37,7 +37,7 @@ from src.features import (
 
 # ── Page configuration ──────────────────────────────────────────────
 st.set_page_config(
-    page_title="Tactical Formation Classifier",
+    page_title="World Cup Tactical Intelligence Platform",
     layout="wide",
     initial_sidebar_state="expanded",
 )
@@ -644,7 +644,7 @@ def generate_insights(windows, timeline_entries, team):
     unique_formations = set(formations_seen)
     if len(unique_formations) > 1:
         insights.append(
-            f"**{team}** shifted between {len(unique_formations)} detected formations "
+            f"<strong>{team}</strong> shifted between {len(unique_formations)} detected formations "
             f"during the match: {', '.join(sorted(unique_formations))}."
         )
 
@@ -657,13 +657,13 @@ def generate_insights(windows, timeline_entries, team):
     if match_pct < 50:
         insights.append(
             f"The K-Means detected formation matched the announced formation "
-            f"only **{match_pct:.0f}%** of the time — suggesting the team's "
+            f"only <strong>{match_pct:.0f}%</strong> of the time — suggesting the team's "
             f"actual shape differed significantly from their announced lineup."
         )
     elif match_pct == 100:
         insights.append(
             f"The detected formation matched the announced formation in "
-            f"**every window** — the team held their announced shape precisely."
+            f"<strong>every window</strong> — the team held their announced shape precisely."
         )
 
     # Formation shifts from tactical timeline
@@ -671,7 +671,7 @@ def generate_insights(windows, timeline_entries, team):
     if shifts:
         for s in shifts:
             insights.append(
-                f"Tactical shift at **{s['minute']}'** → changed to **{s['formation']}**."
+                f"Tactical shift at <strong>{s['minute']}'</strong> → changed to <strong>{s['formation']}</strong>."
             )
 
     return insights
@@ -814,7 +814,7 @@ def main():
 
     # ── Header ──────────────────────────────────────────────────────
     st.markdown(
-        '<p class="hero-title">Tactical Formation Classifier</p>',
+        '<p class="hero-title">World Cup Tactical Intelligence Platform</p>',
         unsafe_allow_html=True,
     )
     st.markdown(

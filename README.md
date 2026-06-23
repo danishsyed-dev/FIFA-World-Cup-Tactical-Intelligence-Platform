@@ -1,41 +1,48 @@
-# ⚽ FIFA World Cup Tactical Formation Classifier
+# ⚽ FIFA World Cup Tactical Intelligence Platform
 
-An interactive, premium machine learning system and Streamlit dashboard that analyzes player tracking coordinates from **StatsBomb Open Data** to detect actual team shapes using unsupervised **1-D K-Means clustering**, and tracks mid-game tactical shifts in real-time using a supervised **Random Forest classifier**.
+An interactive, premium tactical analytics platform and Streamlit dashboard that analyzes player tracking coordinates and events from **StatsBomb Open Data** (2018 and 2022 FIFA World Cups) to classify playing styles, profile manager signatures, evaluate tactical shifts, and track opponent responses.
 
-The dashboard includes full data for the **2018 and 2022 FIFA World Cups**.
+The platform retains 100% of the core formation classifier features while adding deep tactical engines.
 
 ---
 
 ## 🌟 Key Features
 
-*   **StatsBomb Data Pipeline & Cache Layer:** Dynamically fetches and locally caches matches and event data for the 2018 and 2022 World Cups to ensure instant subsequent loads.
-*   **Substitution-Aware Player Tracking:** Chronologically processes substitution events to dynamically resolve the active outfield lineup on the pitch at any minute of the match.
-*   **Unsupervised Actual Shape Detection:** Applies 1-D K-Means clustering on active players' average depth ($X$-coordinates) to group them into *Defense*, *Midfield*, and *Attack* to resolve their actual on-pitch shape.
-*   **Supervised Tactical Shift Classifier:** A Random Forest model trained on 128 total matches (**4,433 rolling windows**) across 5 broad structural families (`3-at-back`, `4-2-3-1`, `4-3-3`, `4-4-2`, `4-5-1`), achieving **32.0% cross-validation accuracy** (a ~1.6x improvement over random guessing).
-*   **Premium Interactive Dashboard:** A stunning, modern dark-themed interface built with custom styling featuring:
-    *   **Hierarchical Match Selector:** World Cup Year $\rightarrow$ Tournament Stage $\rightarrow$ Group Stage / Knockout Round $\rightarrow$ Match $\rightarrow$ Team.
-    *   **Dynamic Time-Window Slider:** Instantly updates metrics, rosters, and the pitch layout.
-    *   **Tactical Board:** A beautiful soccer pitch rendering (using `mplsoccer`) showing average player positions color-coded by cluster.
-    *   **Rolling Probability Timeline:** Plots the classifier's predicted probability of formations over time and highlights mismatch periods.
-    *   **Insights Panel:** Automatically calls out formation mismatch percentages, tactical shifts, and positional anomalies.
+*   **Multi-Dimensional Tactical DNA:** Computes 6 core metrics (0-100 scale) for each manager: Defensive Adaptability, Attacking Flexibility, Formation Stability, Press Resistance, Counter Attack Usage, and Tactical Flexibility, visualised as custom radar charts.
+*   **In-Game Tactical Shift Efficacy:** Contrasts team performance metrics (possession, shots, expected goals, entries, pressures) 10 minutes before vs. 10 minutes after a tactical shift to calculate an adaptation success score.
+*   **Opponent Response Profiler:** Tracks how managers alter formations and tactical styles in reaction to specific opponent play styles, detailing win/draw/loss rates and goals scored/conceded.
+*   **Spatial Playstyle Detection:** Analyzes coordinate heatmaps and action zones to classify styles into Low Block, Mid Block, High Press, Possession-Based, Direct, Wide Attack, and Central Attack.
+*   **Substitution-Aware actual shape detection:** standardizes player tracking coordinates into actual shapes via K-Means clustering, and classifies shapes using a Random Forest model.
 
 ---
 
 ## 📂 Project Structure
 
 ```directory
-├── data/                         # Local cached StatsBomb matches and events JSON
+├── data/                         # Cached StatsBomb JSON files and compiled CSV databases
+│   ├── style_analysis.csv
+│   ├── tactical_shifts.csv
+│   ├── opponent_responses.csv
+│   ├── manager_profiles.csv
+│   └── tactical_dna.csv
 ├── models/                       # Trained classifier & metadata artifacts
-│   ├── formation_classifier.joblib
-│   ├── label_encoder.joblib
-│   ├── feature_cols.joblib
-│   └── metadata.json
-├── src/                          # Source code
-│   ├── __init__.py
+├── pages/                        # Multi-page dashboard layouts
+│   ├── 1_Manager_Intelligence.py  # DNA radar charts, Category A vs B metrics, insights
+│   ├── 2_Style_Analysis.py        # Spatial heatmaps, pressing height, style trends
+│   ├── 3_Tactical_Adaptation.py   # Shift lists, before/after metrics comparison grid
+│   ├── 4_Opponent_Response.py     # Win rates and formation deployment vs. opponent styles
+│   └── 5_Methodology.py           # Mathematical framework and formulas documentation
+├── src/                          # Backend Engines
 │   ├── data_loader.py            # StatsBomb data loader and caching layer
 │   ├── features.py               # Feature engineering, K-Means shape detection, tracking
+│   ├── style_detector.py         # Playing style classification engine
+│   ├── adaptation_analyzer.py    # Shift performance metrics before/after engine
+│   ├── opponent_response.py      # Opponent-specific tactical response engine
+│   ├── tactical_dna.py           # Manager DNA calculations
+│   ├── manager_analysis.py       # Manager profile compilation and percentiles
+│   ├── generate_tactical_db.py   # Database compilation pipeline
 │   └── train.py                  # ML model training and validation pipeline
-├── app.py                        # Streamlit dashboard application
+├── app.py                        # Streamlit homepage (Formation Classifier)
 ├── requirements.txt              # Project dependencies
 └── README.md                     # Project documentation
 ```
@@ -46,8 +53,8 @@ The dashboard includes full data for the **2018 and 2022 FIFA World Cups**.
 
 1.  **Clone the repository:**
     ```bash
-    git clone https://github.com/danishsyed-dev/FIFA-World-Cup-Tactical-Formation-Classifier.git
-    cd FIFA-World-Cup-Tactical-Formation-Classifier
+    git clone https://github.com/danishsyed-dev/FIFA-World-Cup-Tactical-Intelligence-Platform.git
+    cd FIFA-World-Cup-Tactical-Intelligence-Platform
     ```
 
 2.  **Create and activate a virtual environment:**
@@ -64,33 +71,31 @@ The dashboard includes full data for the **2018 and 2022 FIFA World Cups**.
     pip install -r requirements.txt
     ```
 
+4.  **Compile the Tactical Database:**
+    Build the precompiled CSV datasets by running the database compiler:
+    ```bash
+    python -m src.generate_tactical_db
+    ```
+
 ---
 
 ## 🚀 How to Run
 
-### 1. Retrain Model (Optional)
-If you want to compile the dataset and retrain the classifier on the 128 matches:
-```bash
-python -m src.train
-```
-
-### 2. Launch the Streamlit Dashboard
-To run the interactive app:
+To run the interactive platform:
 ```bash
 streamlit run app.py
 ```
-Open [http://localhost:8501](http://localhost:8501) in your browser.
+Open [http://localhost:8501](http://localhost:8501) in your browser. Navigating the sidebar allows exploring the main classifier as well as the new dashboards under the `pages/` directory.
 
 ---
 
 ## 📊 Technical Details
 
-### Feature Engineering
-For each team, the match is divided into rolling 10-minute intervals (with a 5-minute step). For each window:
-1.  We extract the 10 active outfield players using the chronological substitution tracker.
-2.  We collect all event coordinates $(X, Y)$ (passes, carries, receipts, tackles) for each player.
-3.  We compute each player's average spatial position $(X_i, Y_i)$ and sort players by $X$ to create a standardized 20-dimensional feature vector.
-4.  We extract global team features: width ($\max(Y) - \min(Y)$), length ($\max(X) - \min(X)$), centroid, and coordinate standard deviations ($\sigma_X, \sigma_Y$) to measure team compactness.
-
-### Unsupervised K-Means Shape Detection
-Using 1-D K-Means on the outfield players' average $X$-coordinates (depth from goal), we partition them into $K=3$ clusters. The count of players in each cluster (Defense $\rightarrow$ Midfield $\rightarrow$ Attack) corresponds to the team's actual formation (e.g. `4-3-3` or `3-4-3`).
+*   **Defensive Third:** $X < 40$. Low Block is labeled if $> 50\%$ of actions occur in this zone.
+*   **Middle Third:** $40 \le X \le 80$. Mid Block is labeled if $> 50\%$ of actions occur in this zone.
+*   **Attacking Third:** $X > 80$. High Press is labeled if average pressure $X > 70$ or $> 40\%$ of pressures occur in this zone.
+*   **Counter Attack:** Fast transitions from recoveries in own half ($X < 60$) to progressive carry/pass sequence leading to a shot within 20 seconds.
+*   **Play style categories:**
+    *   *Possession-Based:* $> 55\%$ possession, $> 450$ passes.
+    *   *Direct:* $< 45\%$ possession.
+    *   *Balanced:* $45\% - 55\%$ possession.
