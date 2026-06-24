@@ -832,16 +832,132 @@ def main():
         st.warning("Not enough positional data for this team in this match.")
         return
 
-    # Render Time Window slider at the top
+    # ── Time Window selection & Custom Timeline ──────────────────────
     st.markdown("### Select Time Window")
-    window_labels = [f"{w['window_start']}′–{w['window_end']}′" for w in windows]
-    # Default to the middle of the first half (or midpoint of match)
+    
     first_half_windows = [w for w in windows if w["window_end"] <= 50]
     default_val = len(first_half_windows) // 2 if first_half_windows else 0
+    active_idx = st.session_state.get("window_slider", default_val)
+    
+    # Render Legend
+    legend_html = """
+    <div style="display: flex; gap: 15px; margin-bottom: 12px; font-size: 0.8rem; color: #a1a1aa; align-items: center;">
+        <div style="display: flex; align-items: center; gap: 6px;">
+            <div style="width: 12px; height: 3px; background: #10b981; border-radius: 1px;"></div>
+            <span>Matches Announced Lineup</span>
+        </div>
+        <div style="display: flex; align-items: center; gap: 6px;">
+            <div style="width: 12px; height: 3px; background: #71717a; border-radius: 1px;"></div>
+            <span>Mismatch with Announced</span>
+        </div>
+        <div style="display: flex; align-items: center; gap: 6px;">
+            <div style="width: 6px; height: 6px; background: #f43f5e; border-radius: 50%; box-shadow: 0 0 6px #f43f5e;"></div>
+            <span>Formation Shift (Changed from Previous)</span>
+        </div>
+    </div>
+    """
+    st.markdown(legend_html, unsafe_allow_html=True)
+    
+    # Build HTML segments
+    segments_html = []
+    for i, w in enumerate(windows):
+        is_active = (i == active_idx)
+        is_match = (w["detected_formation"] == w["announced_formation"])
+        is_shift = (i > 0 and windows[i]["detected_formation"] != windows[i-1]["detected_formation"])
+        
+        active_class = "active" if is_active else ""
+        match_class = "match" if is_match else "mismatch"
+        shift_class = "shift" if is_shift else ""
+        
+        segments_html.append(
+            f'<div class="timeline-segment {active_class} {match_class} {shift_class}" title="Window: {w["window_start"]}′-{w["window_end"]}′ | Detected: {w["detected_formation"]}">'
+            f'<span class="segment-time">{w["window_start"]}′–{w["window_end"]}′</span>'
+            f'<span class="segment-formation">{w["detected_formation"]}</span>'
+            f'</div>'
+        )
+        
+    timeline_style = """
+    <style>
+    .timeline-container {
+        display: flex;
+        gap: 6px;
+        width: 100%;
+        margin-bottom: 15px;
+        background: #09090b;
+        padding: 10px;
+        border-radius: 12px;
+        border: 1px solid #27272a;
+    }
+    .timeline-segment {
+        flex: 1;
+        height: 42px;
+        border-radius: 6px;
+        position: relative;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        transition: all 0.2s ease;
+        border: 1px solid #27272a;
+        background: #18181b;
+    }
+    .timeline-segment.active {
+        border-color: #f4f4f5 !important;
+        box-shadow: 0 0 10px rgba(244, 244, 245, 0.25);
+        background: #27272a;
+    }
+    .timeline-segment.match {
+        border-bottom: 3px solid #10b981;
+    }
+    .timeline-segment.mismatch {
+        border-bottom: 3px solid #71717a;
+    }
+    .timeline-segment.shift::before {
+        content: "";
+        position: absolute;
+        top: 5px;
+        right: 5px;
+        width: 7px;
+        height: 7px;
+        border-radius: 50%;
+        background-color: #f43f5e;
+        box-shadow: 0 0 6px #f43f5e;
+    }
+    .segment-time {
+        color: #a1a1aa;
+        font-size: 0.65rem;
+        font-family: 'Geist Mono', monospace;
+    }
+    .segment-formation {
+        color: #f4f4f5;
+        font-size: 0.75rem;
+        font-weight: 600;
+        margin-top: 2px;
+    }
+    </style>
+    """
+    st.markdown(timeline_style + f'<div class="timeline-container">{"".join(segments_html)}</div>', unsafe_allow_html=True)
+
+    def format_window_label(i):
+        w = windows[i]
+        label = f"{w['window_start']}′–{w['window_end']}′"
+        is_match = (w["detected_formation"] == w["announced_formation"])
+        is_shift = (i > 0 and windows[i]["detected_formation"] != windows[i-1]["detected_formation"])
+        
+        indicators = []
+        if is_match:
+            indicators.append("✓")
+        if is_shift:
+            indicators.append("Δ")
+            
+        if indicators:
+            return f"{label} ({' '.join(indicators)})"
+        return label
+
     sel_idx = st.select_slider(
         "Move the slider to analyze tactical shapes over different periods of the match:",
         options=list(range(len(windows))),
-        format_func=lambda i: window_labels[i],
+        format_func=format_window_label,
         value=default_val,
         key="window_slider",
     )
