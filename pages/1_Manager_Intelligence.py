@@ -153,8 +153,249 @@ st.markdown("""
     font-size: 0.85rem !important;
     font-weight: 500 !important;
 }
-</style>
+
+/* Manager Profile Card */
+.profile-card {
+    background: linear-gradient(135deg, var(--bg-card) 0%, rgba(24, 24, 27, 0.95) 100%);
+    border: 1px solid var(--border-subtle);
+    border-radius: 16px;
+    padding: 1.5rem;
+    position: relative;
+    overflow: hidden;
+    margin-bottom: 1.5rem;
+    box-shadow: 0 10px 30px -10px rgba(0, 0, 0, 0.5);
+}
+
+.profile-card::after {
+    content: "";
+    position: absolute;
+    top: -50px;
+    right: -50px;
+    width: 150px;
+    height: 150px;
+    border-radius: 50%;
+    background: radial-gradient(circle, var(--accent-glow) 0%, rgba(0,0,0,0) 70%);
+    opacity: 0.15;
+    pointer-events: none;
+    z-index: 1;
+}
+
+.profile-header {
+    display: flex;
+    align-items: center;
+    gap: 1.2rem;
+    position: relative;
+    z-index: 2;
+}
+
+.profile-avatar-container {
+    position: relative;
+    width: 70px;
+    height: 70px;
+}
+
+.profile-avatar {
+    width: 70px;
+    height: 70px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, var(--avatar-gradient-start) 0%, var(--avatar-gradient-end) 100%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.8rem;
+    font-weight: 700;
+    color: #ffffff;
+    border: 2px solid var(--border-subtle);
+    box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+    text-shadow: 1px 1px 2px rgba(0,0,0,0.5);
+}
+
+.profile-flag-badge {
+    position: absolute;
+    bottom: -2px;
+    right: -2px;
+    width: 26px;
+    height: 26px;
+    border-radius: 50%;
+    border: 2px solid var(--bg-card);
+    box-shadow: 0 2px 5px rgba(0,0,0,0.3);
+    object-fit: cover;
+    background: #18181b;
+}
+
+.profile-title-group {
+    display: flex;
+    flex-direction: column;
+}
+
+.profile-name {
+    font-size: 1.4rem;
+    font-weight: 700;
+    color: var(--text-primary);
+    letter-spacing: -0.02em;
+    line-height: 1.2;
+}
+
+.profile-meta {
+    font-size: 0.85rem;
+    color: var(--text-muted);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-top: 4px;
+}
+
+.profile-country-name {
+    font-weight: 600;
+    color: var(--text-primary);
+}
+
+.profile-tournaments {
+    font-size: 0.8rem;
+    background: var(--bg-elevated);
+    padding: 2px 8px;
+    border-radius: 4px;
+    border: 1px solid var(--border-subtle);
+    color: var(--text-primary);
+}
+
+.profile-stats-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 0.8rem;
+    margin-top: 1.5rem;
+    position: relative;
+    z-index: 2;
+}
+
+.profile-stat-box {
+    background: rgba(9, 9, 11, 0.4);
+    border: 1px solid rgba(39, 39, 42, 0.6);
+    border-radius: 8px;
+    padding: 0.6rem;
+    text-align: center;
+}
+
+.profile-stat-label {
+    font-size: 0.65rem;
+    text-transform: uppercase;
+    color: var(--text-muted);
+    letter-spacing: 0.05em;
+    font-weight: 500;
+}
+
+.profile-stat-value {
+    font-family: 'Geist Mono', monospace;
+    font-size: 1.15rem;
+    font-weight: 700;
+    color: var(--text-primary);
+    margin-top: 2px;
+}
 """, unsafe_allow_html=True)
+
+# ── Manager-to-Nation Mapping ───────────────────────────────────────
+NATION_MAP = {
+    "Argentina": {"code": "ar", "colors": ("#38bdf8", "#ffffff"), "glow": "#38bdf8"},
+    "Australia": {"code": "au", "colors": ("#facc15", "#15803d"), "glow": "#facc15"},
+    "Belgium": {"code": "be", "colors": ("#ef4444", "#000000"), "glow": "#ef4444"},
+    "Brazil": {"code": "br", "colors": ("#eab308", "#22c55e"), "glow": "#eab308"},
+    "Cameroon": {"code": "cm", "colors": ("#15803d", "#ef4444"), "glow": "#15803d"},
+    "Canada": {"code": "ca", "colors": ("#ef4444", "#ffffff"), "glow": "#ef4444"},
+    "Colombia": {"code": "co", "colors": ("#facc15", "#1d4ed8"), "glow": "#facc15"},
+    "Costa Rica": {"code": "cr", "colors": ("#1d4ed8", "#ef4444"), "glow": "#1d4ed8"},
+    "Croatia": {"code": "hr", "colors": ("#ef4444", "#1d4ed8"), "glow": "#ef4444"},
+    "Denmark": {"code": "dk", "colors": ("#ef4444", "#ffffff"), "glow": "#ef4444"},
+    "Ecuador": {"code": "ec", "colors": ("#facc15", "#1d4ed8"), "glow": "#facc15"},
+    "Egypt": {"code": "eg", "colors": ("#ef4444", "#000000"), "glow": "#ef4444"},
+    "England": {"code": "gb-eng", "colors": ("#ffffff", "#ef4444"), "glow": "#ef4444"},
+    "France": {"code": "fr", "colors": ("#1d4ed8", "#ef4444"), "glow": "#1d4ed8"},
+    "Germany": {"code": "de", "colors": ("#000000", "#facc15"), "glow": "#facc15"},
+    "Ghana": {"code": "gh", "colors": ("#ef4444", "#facc15"), "glow": "#facc15"},
+    "Iceland": {"code": "is", "colors": ("#1d4ed8", "#ef4444"), "glow": "#1d4ed8"},
+    "Iran": {"code": "ir", "colors": ("#22c55e", "#ef4444"), "glow": "#22c55e"},
+    "Japan": {"code": "jp", "colors": ("#ffffff", "#ef4444"), "glow": "#ef4444"},
+    "Mexico": {"code": "mx", "colors": ("#15803d", "#ef4444"), "glow": "#15803d"},
+    "Morocco": {"code": "ma", "colors": ("#ef4444", "#15803d"), "glow": "#ef4444"},
+    "Netherlands": {"code": "nl", "colors": ("#f97316", "#ffffff"), "glow": "#f97316"},
+    "Nigeria": {"code": "ng", "colors": ("#22c55e", "#ffffff"), "glow": "#22c55e"},
+    "Panama": {"code": "pa", "colors": ("#1d4ed8", "#ef4444"), "glow": "#1d4ed8"},
+    "Peru": {"code": "pe", "colors": ("#ef4444", "#ffffff"), "glow": "#ef4444"},
+    "Poland": {"code": "pl", "colors": ("#ef4444", "#ffffff"), "glow": "#ef4444"},
+    "Portugal": {"code": "pt", "colors": ("#22c55e", "#ef4444"), "glow": "#22c55e"},
+    "Qatar": {"code": "qa", "colors": ("#800020", "#ffffff"), "glow": "#800020"},
+    "Russia": {"code": "ru", "colors": ("#ffffff", "#1d4ed8"), "glow": "#1d4ed8"},
+    "Saudi Arabia": {"code": "sa", "colors": ("#15803d", "#ffffff"), "glow": "#15803d"},
+    "Senegal": {"code": "sn", "colors": ("#22c55e", "#ef4444"), "glow": "#22c55e"},
+    "Serbia": {"code": "rs", "colors": ("#ef4444", "#1d4ed8"), "glow": "#ef4444"},
+    "South Korea": {"code": "kr", "colors": ("#ef4444", "#1d4ed8"), "glow": "#ef4444"},
+    "Spain": {"code": "es", "colors": ("#ef4444", "#facc15"), "glow": "#ef4444"},
+    "Sweden": {"code": "se", "colors": ("#1d4ed8", "#facc15"), "glow": "#1d4ed8"},
+    "Switzerland": {"code": "ch", "colors": ("#ef4444", "#ffffff"), "glow": "#ef4444"},
+    "Tunisia": {"code": "tn", "colors": ("#ef4444", "#ffffff"), "glow": "#ef4444"},
+    "United States": {"code": "us", "colors": ("#1d4ed8", "#ffffff"), "glow": "#1d4ed8"},
+    "Uruguay": {"code": "uy", "colors": ("#38bdf8", "#ffffff"), "glow": "#38bdf8"},
+    "Wales": {"code": "gb-wls", "colors": ("#ef4444", "#ffffff"), "glow": "#ef4444"},
+}
+
+MANAGER_NATIONS = {
+    "John Herdman": "Canada",
+    "Walid Regragui": "Morocco",
+    "Carlos Queiroz": "Iran",
+    "Roberto Martínez": "Belgium",
+    "Gustavo Alfaro": "Ecuador",
+    "Hajime Moriyasu": "Japan",
+    "Luis Enrique": "Spain",
+    "Gregg Berhalter": "United States",
+    "Zlatko Dalić": "Croatia",
+    "Robert Page": "Wales",
+    "Jalel Kadri": "Tunisia",
+    "Didier Deschamps": "France",
+    "Gareth Southgate": "England",
+    "Murat Yakin": "Switzerland",
+    "Fernando Santos": "Portugal",
+    "Otto Addo": "Ghana",
+    "Aliou Cissé": "Senegal",
+    "Louis van Gaal": "Netherlands",
+    "Czesław Michniewicz": "Poland",
+    "Hervé Renard": "Saudi Arabia",
+    "Félix Sánchez": "Qatar",
+    "Kasper Hjulmand": "Denmark",
+    "Hans-Dieter Flick": "Germany",
+    "Gerardo Martino": "Mexico",
+    "Tite": "Brazil",
+    "Lionel Sebastián Scaloni": "Argentina",
+    "Luis Fernando Suárez": "Costa Rica",
+    "Dragan Stojković": "Serbia",
+    "Graham James Arnold": "Australia",
+    "Diego Alonso": "Uruguay",
+    "Paulo Bento": "South Korea",
+    "Hoalid Regragui": "Morocco",
+    "Telê Santana": "Brazil",
+    "Rigobert Song Bahanag": "Cameroon",
+    "Hernán Darío Gómez": "Panama",
+    "Adam Nawałka": "Poland",
+    "Mladen Krstajić": "Serbia",
+    "Shin Tae-Yong": "South Korea",
+    "Joachim Löw": "Germany",
+    "Juan Carlos Osorio": "Mexico",
+    "Óscar Tabárez": "Uruguay",
+    "Ricardo Gareca": "Peru",
+    "Jorge Sampaoli": "Argentina",
+    "José Pékerman": "Colombia",
+    "Nabil Maâloul": "Tunisia",
+    "Akira Nishino": "Japan",
+    "Heimir Hallgrímsson": "Iceland",
+    "Héctor Cúper": "Egypt",
+    "Vladimir Petković": "Switzerland",
+    "Óscar Ramírez": "Costa Rica",
+    "Gernot Rohr": "Nigeria",
+    "Stanislav Cherchesov": "Russia",
+    "Fernando Hierro": "Spain",
+    "Pizzi": "Saudi Arabia",
+    "Åge Hareide": "Denmark",
+    "Lambertus van Marwijk": "Australia",
+    "Jan Olof Andersson": "Sweden",
+}
 
 # Helper to load data
 DATA_DIR = Path(__file__).resolve().parent.parent / "data"
@@ -258,40 +499,80 @@ else:
         c_dna_row = c_row_query.iloc[0] if not c_row_query.empty else dna_df[dna_df["manager"] == compare_mgr].iloc[0]
         c_style_mgr = style_df[style_df["manager"] == compare_mgr]
 
-    # ── Metric Cards Row ────────────────────────────────────────────
-    col1, col2, col3, col4 = st.columns(4)
-    with col1:
-        st.markdown(
-            f'<div class="metric-card">'
-            f'<div class="label">Matches / Record</div>'
-            f'<div class="value">{p_data["matches"]} <span style="font-size:1rem; color:var(--text-muted);">({p_data["wins"]}W-{p_data["draws"]}D-{p_data["losses"]}L)</span></div>'
-            f'</div>',
-            unsafe_allow_html=True,
-        )
-    with col2:
-        st.markdown(
-            f'<div class="metric-card">'
-            f'<div class="label">Primary Formation</div>'
-            f'<div class="value">{p_data["most_used_formation"]}</div>'
-            f'</div>',
-            unsafe_allow_html=True,
-        )
-    with col3:
-        st.markdown(
-            f'<div class="metric-card">'
-            f'<div class="label">Tactical Shifts</div>'
-            f'<div class="value">{p_data["tactical_shifts"]}</div>'
-            f'</div>',
-            unsafe_allow_html=True,
-        )
-    with col4:
-        st.markdown(
-            f'<div class="metric-card">'
-            f'<div class="label">Stability index</div>'
-            f'<div class="value">{p_data["formation_stability"] * 100:.0f}%</div>'
-            f'</div>',
-            unsafe_allow_html=True,
-        )
+    # ── Render Premium Profile Card Header Row ──────────────────────
+    def get_profile_card_html(mgr_name, mgr_data, border_color_var="--accent-green", is_split=False):
+        nation_name = MANAGER_NATIONS.get(mgr_name, "Unknown")
+        nation_info = NATION_MAP.get(nation_name, {"code": "un", "colors": ("#27272a", "#71717a"), "glow": "#27272a"})
+        flag_code = nation_info["code"]
+        grad_start, grad_end = nation_info["colors"]
+        glow_color = nation_info["glow"]
+        
+        # Initials
+        name_parts = mgr_name.split()
+        initials = "".join([p[0] for p in name_parts[:2]]) if len(name_parts) >= 2 else mgr_name[:2]
+        initials = initials.upper()
+        
+        m_wins = int(mgr_data["wins"])
+        m_draws = int(mgr_data["draws"])
+        m_losses = int(mgr_data["losses"])
+        m_matches = int(mgr_data["matches"])
+        m_gf = int(mgr_data["goals_scored"])
+        m_ga = int(mgr_data["goals_conceded"])
+        m_stability = mgr_data["formation_stability"]
+        
+        grid_cols = "repeat(2, 1fr)" if is_split else "repeat(4, 1fr)"
+        stat_padding = "padding: 0.4rem;" if is_split else ""
+        val_size = "font-size: 1rem;" if is_split else ""
+        label_size = "font-size: 0.6rem;" if is_split else ""
+        
+        return f"""
+        <div class="profile-card" style="--accent-glow: {glow_color}; border-left: 4px solid var({border_color_var});">
+            <div class="profile-header">
+                <div class="profile-avatar-container">
+                    <div class="profile-avatar" style="--avatar-gradient-start: {grad_start}; --avatar-gradient-end: {grad_end};">
+                        {initials}
+                    </div>
+                    <img class="profile-flag-badge" src="https://flagcdn.com/w40/{flag_code}.png" alt="{nation_name} flag">
+                </div>
+                <div class="profile-title-group">
+                    <div class="profile-name" style="font-size: {"1.15rem" if is_split else "1.4rem"};">{mgr_name}</div>
+                    <div class="profile-meta" style="font-size: {"0.75rem" if is_split else "0.85rem"};">
+                        <span class="profile-country-name">{nation_name}</span>
+                        <span style="color: var(--text-muted);">•</span>
+                        <span class="profile-tournaments">WC {mgr_data["world_cups"]}</span>
+                    </div>
+                </div>
+            </div>
+            <div class="profile-stats-grid" style="grid-template-columns: {grid_cols}; gap: 0.8rem; margin-top: 1.5rem;">
+                <div class="profile-stat-box" style="{stat_padding}">
+                    <div class="profile-stat-label" style="{label_size}">Matches</div>
+                    <div class="profile-stat-value" style="{val_size}">{m_matches}</div>
+                </div>
+                <div class="profile-stat-box" style="{stat_padding}">
+                    <div class="profile-stat-label" style="{label_size}">Record</div>
+                    <div class="profile-stat-value" style="{"font-size:0.8rem;" if is_split else "font-size:0.9rem;"} margin-top:4px;">{m_wins}W-{m_draws}D-{m_losses}L</div>
+                </div>
+                <div class="profile-stat-box" style="{stat_padding}">
+                    <div class="profile-stat-label" style="{label_size}">Goals F/A</div>
+                    <div class="profile-stat-value" style="{"font-size:0.8rem;" if is_split else "font-size:0.95rem;"} margin-top:4px;">{m_gf}/{m_ga}</div>
+                </div>
+                <div class="profile-stat-box" style="{stat_padding}">
+                    <div class="profile-stat-label" style="{label_size}">Stability</div>
+                    <div class="profile-stat-value" style="{val_size}">{m_stability * 100:.0f}%</div>
+                </div>
+            </div>
+        </div>
+        """
+
+    col_hdr1, col_hdr2 = st.columns(2)
+    if compare_mode and compare_mgr and c_data is not None:
+        with col_hdr1:
+            st.markdown(get_profile_card_html(primary_mgr, p_data, "--accent-green", is_split=True), unsafe_allow_html=True)
+        with col_hdr2:
+            st.markdown(get_profile_card_html(compare_mgr, c_data, "--accent-rose", is_split=True), unsafe_allow_html=True)
+    else:
+        with col_hdr1:
+            st.markdown(get_profile_card_html(primary_mgr, p_data, "--accent-green", is_split=False), unsafe_allow_html=True)
 
     # ── Radar Chart and Profile Layout ──────────────────────────────
     c_left, c_right = st.columns([1, 1])
@@ -375,6 +656,8 @@ else:
 
     with c_right:
         st.markdown('<div class="section-header">Tactical Profile Details</div>', unsafe_allow_html=True)
+        
+        pass
         
         # Category A direct comparison (2018 vs 2022)
         if p_data["category"] == "Category A" and not compare_mode:
@@ -486,6 +769,9 @@ else:
                         compare_mgr: f"{c_data['avg_formation_duration']:.1f} min"
                     }
                 ])
+                # Convert comparison columns to string type to prevent PyArrow serialization errors
+                comp_df[primary_mgr] = comp_df[primary_mgr].astype(str)
+                comp_df[compare_mgr] = comp_df[compare_mgr].astype(str)
                 st.table(comp_df.set_index("Metric"))
 
         # ── Automated Insights ──────────────────────────────────────────

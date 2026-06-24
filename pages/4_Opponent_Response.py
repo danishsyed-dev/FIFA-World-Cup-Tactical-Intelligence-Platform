@@ -284,7 +284,7 @@ else:
                         "Avg Goals Against": "{:.2f}"
                     }
                 ),
-                width='stretch',
+                use_container_width=True,
                 hide_index=True
             )
         else:

@@ -357,7 +357,7 @@ else:
                     "Styles Detected": "Tactical Style Profile"
                 }
             ),
-            width='stretch',
+            use_container_width=True,
             hide_index=True
         )
 

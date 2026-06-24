@@ -1029,7 +1029,7 @@ def main():
             detected_f,
             title_suffix=f"  •  {viz_window['window_start']}′–{viz_window['window_end']}′",
         )
-        st.pyplot(fig, width="stretch")
+        st.pyplot(fig, use_container_width=True)
         plt.close(fig)
 
     with col_info:
@@ -1077,7 +1077,7 @@ def main():
         windows, team, clf, le, feature_cols,
     )
     if fig_timeline:
-        st.pyplot(fig_timeline, width="stretch")
+        st.pyplot(fig_timeline, use_container_width=True)
         plt.close(fig_timeline)
 
     # ── Tactical Insights ───────────────────────────────────────────
@@ -1116,7 +1116,7 @@ def main():
 
         st.dataframe(
             pd.DataFrame(table_data),
-            width="stretch",
+            use_container_width=True,
             hide_index=True,
         )
 
